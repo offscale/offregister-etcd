@@ -1,29 +1,38 @@
+from itertools import ifilter
 from os import path
 from pkg_resources import resource_filename
 
-from fabric.api import run, sudo, cd, local, settings
-from fabric.contrib.files import append, upload_template
+from fabric.api import run, sudo
+from fabric.contrib.files import upload_template
 
-from offutils_strategy_register import _get_client as get_client
-from offregister_etcd import get_etcd_discovery_url
+from offregister_etcd import shared_serve
 
 
 def install(*args, **kwargs):
     pass  # etcd is installed by default
 
 
-def serve(domain, node_name, public_ipv4, private_ipv4, etcd_discovery=None, size=3, *args, **kwargs):
-    client = get_client()
-    etcd_discovery = get_etcd_discovery_url(client, etcd_discovery, size)
+def serve(etcd_discovery=None, size=3, *args, **kwargs):
+    if kwargs['cluster_name']:
+        raise NotImplementedError('Running multiple etcd clusters not yet implemented for CoreOS')
+
+    cluster_name = 'etcd2'  # '-'.join(ifilter(None, ('etcd2', kwargs['cluster_name'])))
+    if run('systemctl status {cluster_name}.service'.format(cluster_name=cluster_name),
+           warn_only=True, quiet=True).succeeded:
+        sudo('systemctl stop {cluster_name}.service'.format(cluster_name=cluster_name))
+
+    etcd_discovery = shared_serve(etcd_discovery, size, cluster_name, kwargs)
+
+    data_dir = '/var/{cluster_name}_data_dir'.format(cluster_name=cluster_name)
+    sudo('mkdir -p "{data_dir}"'.format(data_dir=data_dir))
 
     upload_template(
         path.join(path.dirname(resource_filename('offregister.aux_recipes', '__init__.py')),
                   'templates', 'etcd2.systemd.conf'),
-        '/run/systemd/system/etcd2.service.d/10-oem.conf', context=locals(), use_sudo=True
+        '/run/systemd/system/{cluster_name}.service.d/10-oem.conf'.format(cluster_name=cluster_name),
+        context=locals(), use_sudo=True
     )
 
-    if run('systemctl status etcd2.service', warn_only=True, quiet=True).failed:
-        sudo('systemctl start etcd2.service')
-
-    run('systemctl status etcd2.service')
     sudo('systemctl daemon-reload')
+    sudo('systemctl start {cluster_name}.service'.format(cluster_name=cluster_name))
+    run('systemctl status {cluster_name}.service'.format(cluster_name=cluster_name))
