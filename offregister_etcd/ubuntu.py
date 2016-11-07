@@ -13,7 +13,7 @@ from offregister_fab_utils.misc import ubuntu_install_curl
 from offregister_etcd import shared_serve
 
 
-def install(version='v2.3.6', *args, **kwargs):
+def install(version='v2.3.7', *args, **kwargs):
     command = 'etcd'
     if cmd_avail(command):
         installed_version = (lambda s: s[s.rfind(' ') + 1:])(run('etcd --version | head -n 1', quiet=True))
