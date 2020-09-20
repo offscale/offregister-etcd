@@ -3,8 +3,8 @@
 __author__ = "Samuel Marks"
 __version__ = "0.0.2"
 
-from etcd import EtcdKeyNotFound
-from fabric.api import run, sudo
+from etcd3.exceptions import Etcd3Exception
+from fabric.api import run
 
 from offregister_fab_utils.fs import cmd_avail
 
@@ -14,7 +14,7 @@ from offutils_strategy_register import _get_client as get_client
 def get_etcd_discovery_url(client, discovery_path):
     try:
         return client.get(discovery_path).value
-    except EtcdKeyNotFound:
+    except Etcd3Exception:
         return None
 
 
@@ -39,7 +39,7 @@ def shared_serve(etcd_discovery, size, kwargs):
     if "PEER_PORT" not in kwargs:
         kwargs["PEER_PORT"] = kwargs["ADVERT_PORT"] + 1
     if "ADDITIONAL_LISTEN_PORT" not in kwargs:
-        kwargs["ADDITIONAL_LISTEN_PORT"] = 4001
+        kwargs["ADDITIONAL_LISTEN_PORT"] = 2379
 
     command = "etcd"
     if not cmd_avail(command):
