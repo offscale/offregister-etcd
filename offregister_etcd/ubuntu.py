@@ -58,7 +58,7 @@ def install(version="v2.3.7", *args, **kwargs):
 
 
 def serve(etcd_discovery=None, size=3, *args, **kwargs):
-    cluster_name = "-".join([_f for _f in ("etcd2", kwargs["cluster_name"]) if _f])
+    cluster_name = "-".join(_f for _f in ("etcd2", kwargs["cluster_name"]) if _f)
 
     status = run(
         "status {cluster_name}".format(cluster_name=cluster_name),
