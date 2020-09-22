@@ -11,6 +11,8 @@ from offregister_fab_utils.misc import ubuntu_install_curl
 
 from offregister_etcd import shared_serve
 
+from offutils.util import iteritems
+
 
 def install(version="v2.3.7", *args, **kwargs):
     command = "etcd"
@@ -88,7 +90,7 @@ def serve(etcd_discovery=None, size=3, *args, **kwargs):
             "etcd2.upstart.conf",
         ),
         "/etc/init/{cluster_name}.conf".format(cluster_name=cluster_name),
-        context={k: str(v) for k, v in list(update_d(kwargs, locals()).items())},
+        context={k: str(v) for k, v in iteritems(update_d(kwargs, locals()))},
         use_sudo=True,
     )
 
