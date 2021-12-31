@@ -1,17 +1,14 @@
 from os import path
+
+from fabric.api import cd, local, run, sudo
+from fabric.contrib.files import append, upload_template
+from offregister_fab_utils.fs import cmd_avail, get_tempdir_fab
+from offregister_fab_utils.misc import ubuntu_install_curl
+from offutils import update_d
+from offutils.util import iteritems
 from pkg_resources import resource_filename
 
-from fabric.api import run, sudo, cd, local, settings
-from fabric.contrib.files import append, upload_template
-
-from offutils import update_d
-
-from offregister_fab_utils.fs import get_tempdir_fab, cmd_avail
-from offregister_fab_utils.misc import ubuntu_install_curl
-
 from offregister_etcd import shared_serve
-
-from offutils.util import iteritems
 
 
 def install(version="v2.3.7", *args, **kwargs):

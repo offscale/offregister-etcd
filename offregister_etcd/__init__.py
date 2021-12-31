@@ -5,9 +5,7 @@ __version__ = "0.0.2"
 
 from etcd3.exceptions import Etcd3Exception
 from fabric.api import run
-
 from offregister_fab_utils.fs import cmd_avail
-
 from offutils_strategy_register import _get_client as get_client
 
 

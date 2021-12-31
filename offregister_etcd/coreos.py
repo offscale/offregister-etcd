@@ -1,8 +1,8 @@
 from os import path
-from pkg_resources import resource_filename
 
 from fabric.api import run, sudo
 from fabric.contrib.files import upload_template
+from pkg_resources import resource_filename
 
 from offregister_etcd import shared_serve
 
