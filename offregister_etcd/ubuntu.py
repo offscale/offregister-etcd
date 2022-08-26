@@ -1,12 +1,11 @@
 from os import path
 
 from offregister_fab_utils.apt import apt_depends
-from patchwork.files import append
-
 from offregister_fab_utils.fs import cmd_avail, get_tempdir_fab
 from offregister_fab_utils.misc import upload_template_fmt
 from offutils import update_d
 from offutils.util import iteritems
+from patchwork.files import append
 from pkg_resources import resource_filename
 
 from offregister_etcd import shared_serve
@@ -20,7 +19,7 @@ def install(c, version="v2.3.7", *args, **kwargs):
     command = "etcd"
     if cmd_avail(c, command):
         installed_version = (lambda s: s[s.rfind(" ") + 1 :])(
-            c.run("etcd --version | head -n 1", hide=True)
+            c.run("etcd --version | head -n 1", hide=True).stdout
         )
         if version[1:] == installed_version:
             c.local(
@@ -73,10 +72,13 @@ def serve(c, etcd_discovery=None, size=3, *args, **kwargs):
     )
     if status.exited == 0 and status.endswith("start/running"):
         c.sudo("stop {cluster_name}".format(cluster_name=cluster_name))
-        if "start/running" in c.run(
-            "status {cluster_name}".format(cluster_name=cluster_name),
-            warn=True,
-            hide=True,
+        if (
+            "start/running"
+            in c.run(
+                "status {cluster_name}".format(cluster_name=cluster_name),
+                warn=True,
+                hide=True,
+            ).stdout
         ):
             raise RuntimeError("Cluster hasn't stopped")
     etcd_discovery = shared_serve(etcd_discovery, size, kwargs)
