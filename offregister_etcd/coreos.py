@@ -6,7 +6,7 @@ from pkg_resources import resource_filename
 from offregister_etcd import shared_serve
 
 
-def install(*args, **kwargs):
+def install(c, *args, **kwargs):
     pass  # etcd is installed by default
 
 

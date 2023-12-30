@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 __author__ = "Samuel Marks"
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 from etcd3.exceptions import Etcd3Exception
 from offregister_fab_utils.fs import cmd_avail
