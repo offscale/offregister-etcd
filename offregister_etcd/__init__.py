@@ -2,6 +2,8 @@
 
 __author__ = "Samuel Marks"
 __version__ = "0.0.4"
+__description__ = "etcd deployment module for Fabric (offregister)"
+
 
 from etcd3.exceptions import Etcd3Exception
 from offregister_fab_utils.fs import cmd_avail
